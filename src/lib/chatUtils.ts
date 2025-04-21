@@ -1,4 +1,3 @@
-
 import { ChatMessage, User } from '@/types';
 import { mockChats } from './mockData';
 import { pregnancyTips, babyMilestones } from './mockData';
@@ -43,6 +42,11 @@ const commonQuestions: QnA[] = [
     keywords: ['hello', 'hi', 'hey', 'namaste', 'नमस्ते', 'हैलो'],
     english: 'Hello! How can I help you today with pregnancy or baby care information?',
     hindi: 'नमस्ते! मैं आज गर्भावस्था या शिशु देखभाल की जानकारी के बारे में आपकी कैसे मदद कर सकती हूँ?'
+  },
+  {
+    keywords: ['bye', 'goodbye', 'see you', 'आलविदा', 'फिर मिलेंगे', 'बाय'],
+    english: 'Goodbye! If you need more help, just ask anytime!',
+    hindi: 'अलविदा! यदि आपको और मदद चाहिए, तो कभी भी पूछिए।'
   },
   {
     keywords: ['diet', 'food', 'eat', 'nutrition', 'भोजन', 'खाना', 'आहार', 'पोषण'],
@@ -107,7 +111,7 @@ const commonQuestions: QnA[] = [
   {
     keywords: ['crying', 'colic', 'soothe', 'रोना', 'कॉलिक', 'शांत'],
     english: 'To soothe a crying baby: Check for hunger, wet diaper, or discomfort; try gentle rocking, white noise, swaddling, or a pacifier; go for a car ride or walk; and rule out colic or other health issues with your pediatrician.',
-    hindi: 'रोते बच्चे को शांत करने के लिए: भूख, गीले डायपर, या असुविधा की जांच करें; धीमे से झुलाने, व्हाइट नॉइज, स्वैडलिंग, या पेसिफायर का प्रयास करें; कार की सवारी या टहलने के लिए जाएं; और अपने बाल रोग विशेषज्ञ के साथ कॉलिक या अन्य स्वास्थ्य समस्याओं को बाहर करें।'
+    hindi: 'रोते बच्चे को शांत करने के लिए: भूख, गीले डायपर, या असुविधा की जांच करें; धीमे से झुलाने, व्हाइट नॉइज, स्वैडल्स, या पेसिफायर का प्रयास करें; कार की सवारी या टहलने के लिए जाएं; और अपने बाल रोग विशेषज्ञ के साथ कॉलिक या अन्य स्वास्थ्य समस्याओं को बाहर करें।'
   },
   {
     keywords: ['milestones', 'development', 'growth', 'मील के पत्थर', 'विकास', 'वृद्धि'],
@@ -169,7 +173,7 @@ export const getBotResponse = async (message: string, user: User): Promise<strin
 8. स्तनपान
 9. टीकाकरण
 10. आपातकालीन चिह्न
-11. प्रसव और डिलिवरी
+11. प्रसव और डिलीवरी
 12. अल्ट्रासाउंड और जांच
 13. विटामिन और सप्लीमेंट्स
 14. नवजात शिशु देखभाल
