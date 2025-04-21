@@ -1,21 +1,22 @@
+
 import { ChatMessage, User } from '@/types';
 import { mockChats } from './mockData';
 import { pregnancyTips, babyMilestones } from './mockData';
 
-// Save chat messages to localStorage
-export const saveChatMessages = (messages: ChatMessage[]): void => {
-  localStorage.setItem('kilkari-chats', JSON.stringify(messages));
+// Save chat messages to localStorage with user ID
+export const saveChatMessages = (messages: ChatMessage[], userId: string): void => {
+  localStorage.setItem(`kilkari-chats-${userId}`, JSON.stringify(messages));
 };
 
-// Get chat messages from localStorage
-export const getChatMessages = (): ChatMessage[] => {
-  const chatsStr = localStorage.getItem('kilkari-chats');
-  return chatsStr ? JSON.parse(chatsStr) : mockChats;
+// Get chat messages from localStorage for specific user
+export const getChatMessages = (userId: string): ChatMessage[] => {
+  const chatsStr = localStorage.getItem(`kilkari-chats-${userId}`);
+  return chatsStr ? JSON.parse(chatsStr) : [];
 };
 
-// Add new message
-export const addMessage = (message: string, sender: 'user' | 'bot'): ChatMessage => {
-  const chats = getChatMessages();
+// Add new message for a specific user
+export const addMessage = (message: string, sender: 'user' | 'bot', userId: string): ChatMessage => {
+  const chats = getChatMessages(userId);
   
   const newMessage: ChatMessage = {
     id: Date.now().toString(),
@@ -25,7 +26,7 @@ export const addMessage = (message: string, sender: 'user' | 'bot'): ChatMessage
   };
   
   const updatedChats = [...chats, newMessage];
-  saveChatMessages(updatedChats);
+  saveChatMessages(updatedChats, userId);
   
   return newMessage;
 };

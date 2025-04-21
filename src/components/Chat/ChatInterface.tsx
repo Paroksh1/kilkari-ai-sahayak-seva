@@ -24,13 +24,13 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
   const { language } = useLanguage();
   
   useEffect(() => {
-    // Load chat history
-    const chatHistory = getChatMessages();
+    // Load user-specific chat history
+    const chatHistory = getChatMessages(user.id);
     setMessages(chatHistory);
     
     // Scroll to bottom
     scrollToBottom();
-  }, []);
+  }, [user.id]);
   
   const scrollToBottom = () => {
     setTimeout(() => {
@@ -41,8 +41,8 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
   const sendMessage = async () => {
     if (!inputMessage.trim()) return;
     
-    // Add user message to chat
-    const userMessage = addMessage(inputMessage, 'user');
+    // Add user message to chat with user ID
+    const userMessage = addMessage(inputMessage, 'user', user.id);
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInputMessage('');
     scrollToBottom();
@@ -56,7 +56,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
         language: language
       };
       const botResponseText = await getBotResponse(inputMessage, userWithCurrentLanguage);
-      const botMessage = addMessage(botResponseText, 'bot');
+      const botMessage = addMessage(botResponseText, 'bot', user.id);
       setMessages(prevMessages => [...prevMessages, botMessage]);
       scrollToBottom();
     } catch (error) {
