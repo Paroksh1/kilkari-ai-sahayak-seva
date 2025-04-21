@@ -1,4 +1,3 @@
-
 type TranslationKey = 
   // Common
   | 'dashboard' 
@@ -119,13 +118,13 @@ export const englishTranslations: Translations = {
   pleaseWait: 'Please wait...',
   // Chat
   chatbotTitle: 'Kilkari AI Chatbot',
-  chatbotIntroHint: 'Hello! I am Kilkari AI Chatbot. You can ask any questions about pregnancy or infant care.',
+  chatbotIntroHint: 'Hello! I am Kilkari AI Chatbot. You can ask any questions about pregnancy or infant care. Type "help" to see what I can do.',
   typeQuestion: 'Type your question here...',
   voiceInput: 'Voice input',
   voiceStopped: 'Voice input stopped',
   voiceStarted: 'Voice input started... start speaking',
   voiceCompleted: 'Voice input completed',
-  browserNotSupport: 'Your browser does not support voice input',
+  browserNotSupport: 'Your browser does not support this feature',
   // Appointments
   upcomingAppointments: 'Upcoming',
   pastAppointments: 'Past',
@@ -203,13 +202,13 @@ export const hindiTranslations: Translations = {
   pleaseWait: 'प्रतीक्षा करें...',
   // Chat
   chatbotTitle: 'किलकारी AI चैटबॉट',
-  chatbotIntroHint: 'नमस्ते! मैं किलकारी AI चैटबॉट हूं। आप गर्भावस्था या शिशु देखभाल के बारे में कोई भी प्रश्न पूछ सकते हैं।',
+  chatbotIntroHint: 'नमस्ते! मैं किलकारी AI चैटबॉट हूं। आप गर्भावस्था या शिशु देखभाल के बारे में कोई भी प्रश्न पूछ सकते हैं। "मदद" टाइप करके देखें मैं क्या कर सकता हूं।',
   typeQuestion: 'अपना प्रश्न यहां टाइप करें...',
   voiceInput: 'वॉइस इनपुट',
   voiceStopped: 'वॉइस इनपुट बंद',
   voiceStarted: 'वॉइस इनपुट शुरू... बोलना शुरू करें',
   voiceCompleted: 'वॉइस इनपुट पूरा हुआ',
-  browserNotSupport: 'आपका ब्राउज़र वॉइस इनपुट का समर्थन नहीं करता',
+  browserNotSupport: 'आपका ब्राउज़र इस सुविधा का समर्थन नहीं करता',
   // Appointments
   upcomingAppointments: 'आगामी',
   pastAppointments: 'पिछली',
