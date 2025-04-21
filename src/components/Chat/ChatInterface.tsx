@@ -1,6 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUp, Mic, MicOff, Send } from 'lucide-react';
+import { MessageSquare, Mic, MicOff, Send } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { toast } from 'sonner';
 import { ChatMessage, User } from '@/types';
 import { addMessage, getBotResponse, getChatMessages } from '@/lib/chatUtils';
 import { useTranslations } from '@/hooks/use-translations';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface ChatInterfaceProps {
   user: User;
@@ -20,6 +21,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslations();
+  const { language } = useLanguage();
   
   useEffect(() => {
     // Load chat history
@@ -45,18 +47,20 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
     setInputMessage('');
     scrollToBottom();
     
-    // Get bot response
+    // Get bot response with the current language
     setIsLoading(true);
     try {
-      const botResponseText = await getBotResponse(inputMessage, user);
+      // Pass the current language context instead of user.language
+      const userWithCurrentLanguage = {
+        ...user,
+        language: language
+      };
+      const botResponseText = await getBotResponse(inputMessage, userWithCurrentLanguage);
       const botMessage = addMessage(botResponseText, 'bot');
       setMessages(prevMessages => [...prevMessages, botMessage]);
       scrollToBottom();
     } catch (error) {
-      toast.error(user.language === 'hindi' 
-        ? 'बॉट रिस्पॉन्स प्राप्त करने में समस्या' 
-        : 'Problem getting bot response'
-      );
+      toast.error(t('browserNotSupport'));
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +90,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
         // Mock voice recognition - in a real app, we'd use the Web Speech API
         setTimeout(() => {
           setIsListening(false);
-          if (user.language === 'hindi') {
+          if (language === 'hindi') {
             setInputMessage('मुझे गर्भावस्था के बारे में जानकारी चाहिए');
           } else {
             setInputMessage('I need information about pregnancy');

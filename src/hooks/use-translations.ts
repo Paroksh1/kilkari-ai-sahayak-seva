@@ -6,6 +6,8 @@ export function useTranslations() {
   const { language } = useLanguage();
   
   const t = (key: keyof typeof englishTranslations): string => {
+    if (!key) return '';
+    
     return language === 'english' 
       ? englishTranslations[key] 
       : hindiTranslations[key];
