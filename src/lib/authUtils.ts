@@ -35,6 +35,24 @@ const mockUsers: User[] = [
   }
 ];
 
+// Store for user credentials
+interface UserCredential {
+  email: string; // or contact info
+  password: string;
+  userId: string;
+}
+
+// Get stored credentials
+const getStoredCredentials = (): UserCredential[] => {
+  const credentialsStr = localStorage.getItem('kilkari-credentials');
+  return credentialsStr ? JSON.parse(credentialsStr) : [];
+};
+
+// Save credentials
+const saveCredentials = (credentials: UserCredential[]): void => {
+  localStorage.setItem('kilkari-credentials', JSON.stringify(credentials));
+};
+
 // Get user from local storage
 export const getUser = (): User | null => {
   const userStr = localStorage.getItem('kilkari-user');
@@ -53,11 +71,28 @@ export const saveUser = (user: User): void => {
 
 // Login function
 export const login = async (email: string, password: string): Promise<User> => {
-  // For demo purposes, we'll just use the first mock user
   return new Promise((resolve, reject) => {
     setTimeout(() => {
+      // Check credentials against stored credentials
+      const credentials = getStoredCredentials();
+      const userCredential = credentials.find(
+        cred => cred.email === email && cred.password === password
+      );
+      
+      if (userCredential) {
+        // Get the user with matching ID
+        const users = JSON.parse(localStorage.getItem('kilkari-users') || '[]');
+        const user = users.find((u: User) => u.id === userCredential.userId);
+        
+        if (user) {
+          saveUser(user); // Save to current session
+          resolve(user);
+          return;
+        }
+      }
+      
+      // For demo fallback (if no matching credentials)
       if (email && password) {
-        // Get the saved language preference or default to 'hindi'
         const savedLang = localStorage.getItem('language') as 'hindi' | 'english' || 'hindi';
         const user = { ...mockUsers[0], language: savedLang };
         saveUser(user);
@@ -70,7 +105,7 @@ export const login = async (email: string, password: string): Promise<User> => {
 };
 
 // Signup function
-export const signup = async (userData: Partial<User>): Promise<User> => {
+export const signup = async (userData: Partial<User> & { password?: string }): Promise<User> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       const newUser: User = {
@@ -88,6 +123,22 @@ export const signup = async (userData: Partial<User>): Promise<User> => {
       
       // Save language preference globally
       localStorage.setItem('language', newUser.language);
+      
+      // Store the user in kilkari-users
+      const users = JSON.parse(localStorage.getItem('kilkari-users') || '[]');
+      users.push(newUser);
+      localStorage.setItem('kilkari-users', JSON.stringify(users));
+      
+      // Store credentials if password is provided
+      if (userData.password && userData.contact) {
+        const credentials = getStoredCredentials();
+        credentials.push({
+          email: userData.contact,
+          password: userData.password,
+          userId: newUser.id
+        });
+        saveCredentials(credentials);
+      }
       
       resolve(newUser);
     }, 1000);

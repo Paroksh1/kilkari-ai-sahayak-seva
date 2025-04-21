@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,8 @@ const SignupForm = () => {
     name: '',
     age: '',
     contact: '',
+    password: '',
+    confirmPassword: '',
     isPregnant: true,
     pregnancyWeek: '',
     babyMonths: '',
@@ -47,6 +48,18 @@ const SignupForm = () => {
         return;
       }
 
+      if (!formData.password) {
+        toast.error('कृपया पासवर्ड दर्ज करें / Please enter a password');
+        setLoading(false);
+        return;
+      }
+
+      if (formData.password !== formData.confirmPassword) {
+        toast.error('पासवर्ड मेल नहीं खाते / Passwords do not match');
+        setLoading(false);
+        return;
+      }
+
       if (formData.isPregnant && !formData.pregnancyWeek) {
         toast.error('कृपया गर्भावस्था का सप्ताह दर्ज करें / Please enter pregnancy week');
         setLoading(false);
@@ -64,6 +77,7 @@ const SignupForm = () => {
         name: formData.name,
         age: parseInt(formData.age),
         contact: formData.contact,
+        password: formData.password,
         pregnancyWeek: formData.isPregnant ? parseInt(formData.pregnancyWeek) : undefined,
         babyMonths: !formData.isPregnant ? parseInt(formData.babyMonths) : undefined,
         dietaryPreference: formData.dietaryPreference,
@@ -122,6 +136,34 @@ const SignupForm = () => {
           onChange={handleChange}
           placeholder="संपर्क जानकारी दर्ज करें / Enter contact information"
           className="kilkari-input"
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="password">पासवर्ड / Password *</Label>
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          value={formData.password}
+          onChange={handleChange}
+          placeholder="अपना पासवर्ड दर्ज करें / Enter your password"
+          className="kilkari-input"
+          required
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="confirmPassword">पासवर्ड की पुष्टि करें / Confirm Password *</Label>
+        <Input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          placeholder="अपने पासवर्ड की पुष्टि करें / Confirm your password"
+          className="kilkari-input"
+          required
         />
       </div>
 

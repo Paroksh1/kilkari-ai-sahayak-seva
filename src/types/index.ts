@@ -13,6 +13,13 @@ export interface User {
   moodHistory?: MoodEntry[];
 }
 
+// Credentials are stored separately from User object for security
+export interface UserCredentials {
+  email: string;
+  password: string;
+  userId: string;
+}
+
 export interface MoodEntry {
   date: string; // ISO date string
   mood: 'happy' | 'neutral' | 'sad';
