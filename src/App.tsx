@@ -1,27 +1,22 @@
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import DashboardPage from "./pages/DashboardPage";
-import AppointmentsPage from "./pages/AppointmentsPage";
-import ChatbotPage from "./pages/ChatbotPage";
-import ShoppingListPage from "./pages/ShoppingListPage";
-import ProfilePage from "./pages/ProfilePage";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { LanguageProvider } from './context/LanguageContext';
 
-const queryClient = new QueryClient();
+import Index from './pages/Index';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import DashboardPage from './pages/DashboardPage';
+import AppointmentsPage from './pages/AppointmentsPage';
+import ChatbotPage from './pages/ChatbotPage';
+import ProfilePage from './pages/ProfilePage';
+import ShoppingListPage from './pages/ShoppingListPage';
+import NotFound from './pages/NotFound';
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
+function App() {
+  return (
+    <LanguageProvider>
+      <Router>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
@@ -29,13 +24,14 @@ const App = () => (
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/appointments" element={<AppointmentsPage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
-          <Route path="/shopping-list" element={<ShoppingListPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/shopping-list" element={<ShoppingListPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+      </Router>
+      <Toaster position="top-center" closeButton richColors />
+    </LanguageProvider>
+  );
+}
 
 export default App;

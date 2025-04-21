@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { ChatMessage, User } from '@/types';
 import { addMessage, getBotResponse, getChatMessages } from '@/lib/chatUtils';
+import { useTranslations } from '@/hooks/use-translations';
 
 interface ChatInterfaceProps {
   user: User;
@@ -18,6 +19,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslations();
   
   useEffect(() => {
     // Load chat history
@@ -51,7 +53,10 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
       setMessages(prevMessages => [...prevMessages, botMessage]);
       scrollToBottom();
     } catch (error) {
-      toast.error('बॉट रिस्पॉन्स प्राप्त करने में समस्या / Problem getting bot response');
+      toast.error(user.language === 'hindi' 
+        ? 'बॉट रिस्पॉन्स प्राप्त करने में समस्या' 
+        : 'Problem getting bot response'
+      );
     } finally {
       setIsLoading(false);
     }
@@ -72,11 +77,11 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
       if (isListening) {
         // Stop listening
         setIsListening(false);
-        toast.info('वॉइस इनपुट बंद / Voice input stopped');
+        toast.info(t('voiceStopped'));
       } else {
         // Start listening
         setIsListening(true);
-        toast.info('वॉइस इनपुट शुरू... बोलना शुरू करें / Voice input started... start speaking');
+        toast.info(t('voiceStarted'));
         
         // Mock voice recognition - in a real app, we'd use the Web Speech API
         setTimeout(() => {
@@ -86,11 +91,11 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
           } else {
             setInputMessage('I need information about pregnancy');
           }
-          toast.info('वॉइस इनपुट पूरा हुआ / Voice input completed');
+          toast.info(t('voiceCompleted'));
         }, 3000);
       }
     } else {
-      toast.error('आपका ब्राउज़र वॉइस इनपुट का समर्थन नहीं करता / Your browser does not support voice input');
+      toast.error(t('browserNotSupport'));
     }
   };
 
@@ -98,7 +103,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
     <Card className="kilkari-card h-full">
       <CardHeader className="bg-kilkari-purple/10 pb-2">
         <CardTitle className="text-lg font-medium">
-          किलकारी AI चैटबॉट / Kilkari AI Chatbot
+          {t('chatbotTitle')}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4 flex flex-col h-[calc(100%-60px)]">
@@ -106,9 +111,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
           {messages.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground">
-                {user.language === 'hindi' 
-                  ? 'नमस्ते! मैं किलकारी AI चैटबॉट हूं। आप गर्भावस्था या शिशु देखभाल के बारे में कोई भी प्रश्न पूछ सकते हैं।' 
-                  : 'Hello! I am Kilkari AI Chatbot. You can ask any questions about pregnancy or infant care.'}
+                {t('chatbotIntroHint')}
               </p>
             </div>
           ) : (
@@ -150,7 +153,7 @@ const ChatInterface = ({ user }: ChatInterfaceProps) => {
             value={inputMessage}
             onChange={handleInputChange}
             onKeyDown={handleKeyPress}
-            placeholder={user.language === 'hindi' ? 'अपना प्रश्न यहां टाइप करें...' : 'Type your question here...'}
+            placeholder={t('typeQuestion')}
             className="kilkari-input pr-24"
             disabled={isLoading}
           />

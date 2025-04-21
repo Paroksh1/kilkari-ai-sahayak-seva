@@ -4,26 +4,24 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { getUser, logout } from '@/lib/authUtils';
 import { User } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Home, Calendar, MessageSquare, User as UserIcon, Menu, X, ShoppingCart, Baby, Globe, Languages } from 'lucide-react';
+import { Home, Calendar, MessageSquare, User as UserIcon, Menu, X, ShoppingCart, Baby } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Switch } from '@/components/ui/switch';
+import { useLanguage } from '@/context/LanguageContext';
+import { useTranslations } from '@/hooks/use-translations';
 
 const NavBar = () => {
   const [user, setUser] = useState<User | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslations();
 
   useEffect(() => {
     setUser(getUser());
-    // Read language from localStorage or default to english
-    const savedLang = localStorage.getItem('language');
-    if (savedLang === 'hindi' || savedLang === 'english') {
-      setLanguage(savedLang);
-    }
   }, []);
 
   const handleLogout = () => {
@@ -40,20 +38,19 @@ const NavBar = () => {
   };
 
   const navItems = user ? [
-    { path: '/dashboard', icon: <Home className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'डैशबोर्ड' : 'Dashboard' },
-    { path: '/appointments', icon: <Calendar className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'अपॉइंटमेंट' : 'Appointments' },
-    { path: '/chatbot', icon: <MessageSquare className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'चैटबॉट' : 'Chatbot' },
-    { path: '/shopping-list', icon: <ShoppingCart className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'शॉपिंग लिस्ट' : 'Shopping List' },
-    { path: '/profile', icon: <UserIcon className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'प्रोफ़ाइल' : 'Profile' },
+    { path: '/dashboard', icon: <Home className="mr-2 h-5 w-5" />, label: t('dashboard') },
+    { path: '/appointments', icon: <Calendar className="mr-2 h-5 w-5" />, label: t('appointments') },
+    { path: '/chatbot', icon: <MessageSquare className="mr-2 h-5 w-5" />, label: t('chatbot') },
+    { path: '/shopping-list', icon: <ShoppingCart className="mr-2 h-5 w-5" />, label: t('shoppingList') },
+    { path: '/profile', icon: <UserIcon className="mr-2 h-5 w-5" />, label: t('profile') },
   ] : [
-    { path: '/login', icon: <UserIcon className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'लॉगिन' : 'Login' },
-    { path: '/signup', icon: <UserIcon className="mr-2 h-5 w-5" />, label: language === 'hindi' ? 'साइन अप' : 'Sign Up' },
+    { path: '/login', icon: <UserIcon className="mr-2 h-5 w-5" />, label: t('login') },
+    { path: '/signup', icon: <UserIcon className="mr-2 h-5 w-5" />, label: t('signup') },
   ];
 
   const onToggleLanguage = () => {
     const newLang = language === 'english' ? 'hindi' : 'english';
     setLanguage(newLang);
-    localStorage.setItem('language', newLang);
   };
 
   // Show toggle as a small switch with "हिंदी" on left and "EN" on right for clarity
@@ -119,7 +116,7 @@ const NavBar = () => {
                             }}
                             className="w-full kilkari-button-secondary"
                           >
-                            {language === 'hindi' ? 'लॉग आउट' : 'Logout'}
+                            {t('logout')}
                           </Button>
                         </li>
                       )}
@@ -154,7 +151,7 @@ const NavBar = () => {
                         onClick={handleLogout}
                         className="kilkari-button-secondary"
                       >
-                        {language === 'hindi' ? 'लॉग आउट' : 'Logout'}
+                        {t('logout')}
                       </Button>
                     </li>
                   )}
@@ -169,4 +166,3 @@ const NavBar = () => {
 };
 
 export default NavBar;
-

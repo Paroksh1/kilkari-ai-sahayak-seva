@@ -5,10 +5,12 @@ import MainLayout from '@/components/Layout/MainLayout';
 import ChatInterface from '@/components/Chat/ChatInterface';
 import { getUser } from '@/lib/authUtils';
 import { User } from '@/types';
+import { useTranslations } from '@/hooks/use-translations';
 
 const ChatbotPage = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
+  const { t } = useTranslations();
   
   useEffect(() => {
     const userData = getUser();
@@ -28,7 +30,7 @@ const ChatbotPage = () => {
     <MainLayout>
       <div className="max-w-5xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">
-          AI चैटबॉट / AI Chatbot
+          {t('chatbot')}
         </h1>
         
         <div className="h-[70vh]">
