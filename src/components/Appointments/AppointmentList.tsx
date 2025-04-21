@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Calendar, Trash2, ExternalLink } from 'lucide-react';
 import { format, isPast, isFuture } from 'date-fns';
 import { deleteAppointment, generateGoogleCalendarLink, getAppointments } from '@/lib/appointmentUtils';
+import { isGoogleCalendarAuthorized, requestCalendarAuthorization } from '@/lib/googleCalendarUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Appointment } from '@/types';
@@ -12,17 +13,33 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 const AppointmentList = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [isCalendarAuthorized, setIsCalendarAuthorized] = useState(false);
   
   useEffect(() => {
     loadAppointments();
+    checkCalendarAuth();
   }, []);
+  
+  const checkCalendarAuth = () => {
+    setIsCalendarAuthorized(isGoogleCalendarAuthorized());
+  };
+
+  const handleCalendarAuth = async () => {
+    const result = await requestCalendarAuthorization();
+    if (result) {
+      toast.success('Google कैलेंडर से जुड़ गया / Connected to Google Calendar');
+      setIsCalendarAuthorized(true);
+    } else {
+      toast.error('कैलेंडर एक्सेस अस्वीकृत / Calendar access denied');
+    }
+  };
   
   const loadAppointments = () => {
     setAppointments(getAppointments());
   };
   
-  const handleDelete = (id: string) => {
-    deleteAppointment(id);
+  const handleDelete = async (id: string) => {
+    await deleteAppointment(id);
     toast.success('अपॉइंटमेंट हटा दी गई / Appointment deleted');
     loadAppointments();
   };
@@ -47,8 +64,19 @@ const AppointmentList = () => {
   return (
     <Card className="kilkari-card">
       <CardHeader className="bg-kilkari-purple/10 pb-2">
-        <CardTitle className="text-lg font-medium">
-          अपॉइंटमेंट / Appointments
+        <CardTitle className="text-lg font-medium flex items-center justify-between">
+          <span>अपॉइंटमेंट / Appointments</span>
+          {!isCalendarAuthorized && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-kilkari-purple border-kilkari-purple hover:bg-kilkari-purple/10"
+              onClick={handleCalendarAuth}
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              कैलेंडर से जुड़ें / Connect Calendar
+            </Button>
+          )}
         </CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
@@ -107,15 +135,22 @@ const AppointmentList = () => {
                         हटाएं / Delete
                       </Button>
                       
-                      <a 
-                        href={generateGoogleCalendarLink(appointment)} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center text-sm text-kilkari-purple hover:underline"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        कैलेंडर में जोड़ें / Add to Calendar
-                      </a>
+                      {isCalendarAuthorized ? (
+                        <span className="text-sm text-kilkari-purple">
+                          <Calendar className="h-4 w-4 inline mr-1" />
+                          कैलेंडर में जोड़ा गया / Added to Calendar
+                        </span>
+                      ) : (
+                        <a 
+                          href={generateGoogleCalendarLink(appointment)} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-sm text-kilkari-purple hover:underline"
+                        >
+                          <ExternalLink className="h-4 w-4 mr-1" />
+                          कैलेंडर में जोड़ें / Add to Calendar
+                        </a>
+                      )}
                     </div>
                   </div>
                 ))

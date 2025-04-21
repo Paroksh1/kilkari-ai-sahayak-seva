@@ -1,6 +1,8 @@
 
 import { Appointment } from '@/types';
 import { mockAppointments } from './mockData';
+import { addToGoogleCalendar, removeFromGoogleCalendar } from './googleCalendarUtils';
+import { toast } from 'sonner';
 
 // Save appointments to localStorage
 export const saveAppointments = (appointments: Appointment[]): void => {
@@ -14,7 +16,7 @@ export const getAppointments = (): Appointment[] => {
 };
 
 // Add new appointment
-export const addAppointment = (appointment: Omit<Appointment, 'id'>): Appointment => {
+export const addAppointment = async (appointment: Omit<Appointment, 'id'>): Promise<Appointment> => {
   const appointments = getAppointments();
   const newAppointment = {
     ...appointment,
@@ -22,23 +24,49 @@ export const addAppointment = (appointment: Omit<Appointment, 'id'>): Appointmen
   };
   
   saveAppointments([...appointments, newAppointment]);
+  
+  // Attempt to add to Google Calendar
+  try {
+    const calendarAdded = await addToGoogleCalendar(newAppointment);
+    if (calendarAdded) {
+      toast.success('अपॉइंटमेंट Google कैलेंडर में भी जोड़ी गई / Appointment also added to Google Calendar');
+    }
+  } catch (error) {
+    console.error('Failed to add to Google Calendar:', error);
+  }
+  
   return newAppointment;
 };
 
 // Delete appointment
-export const deleteAppointment = (id: string): void => {
+export const deleteAppointment = async (id: string): Promise<void> => {
   const appointments = getAppointments();
   saveAppointments(appointments.filter(appt => appt.id !== id));
+  
+  // Attempt to remove from Google Calendar
+  try {
+    await removeFromGoogleCalendar(id);
+  } catch (error) {
+    console.error('Failed to remove from Google Calendar:', error);
+  }
 };
 
 // Update appointment
-export const updateAppointment = (updatedAppointment: Appointment): void => {
+export const updateAppointment = async (updatedAppointment: Appointment): Promise<void> => {
   const appointments = getAppointments();
   saveAppointments(
     appointments.map(appt => 
       appt.id === updatedAppointment.id ? updatedAppointment : appt
     )
   );
+  
+  // Update in Google Calendar by removing and re-adding
+  try {
+    await removeFromGoogleCalendar(updatedAppointment.id);
+    await addToGoogleCalendar(updatedAppointment);
+  } catch (error) {
+    console.error('Failed to update in Google Calendar:', error);
+  }
 };
 
 // Generate Google Calendar link

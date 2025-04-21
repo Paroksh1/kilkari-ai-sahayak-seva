@@ -6,10 +6,12 @@ import { Calendar } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { generateGoogleCalendarLink, getAppointments } from '@/lib/appointmentUtils';
+import { isGoogleCalendarAuthorized } from '@/lib/googleCalendarUtils';
 import { Appointment } from '@/types';
 
 const UpcomingAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [isCalendarAuthorized, setIsCalendarAuthorized] = useState(false);
 
   useEffect(() => {
     const allAppointments = getAppointments();
@@ -21,6 +23,7 @@ const UpcomingAppointments = () => {
       .slice(0, 3);
     
     setAppointments(upcomingAppointments);
+    setIsCalendarAuthorized(isGoogleCalendarAuthorized());
   }, []);
 
   const formatAppointmentDate = (dateStr: string) => {
@@ -56,14 +59,20 @@ const UpcomingAppointments = () => {
                   <p className="text-sm text-muted-foreground">{appointment.purpose}</p>
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-xs">{formatAppointmentDate(appointment.date)} • {appointment.time}</span>
-                    <a 
-                      href={generateGoogleCalendarLink(appointment)} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-xs text-kilkari-purple hover:underline"
-                    >
-                      कैलेंडर में जोड़ें / Add to Calendar
-                    </a>
+                    {isCalendarAuthorized ? (
+                      <span className="text-xs text-kilkari-purple">
+                        कैलेंडर में जोड़ा गया / Added to Calendar
+                      </span>
+                    ) : (
+                      <a 
+                        href={generateGoogleCalendarLink(appointment)} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-kilkari-purple hover:underline"
+                      >
+                        कैलेंडर में जोड़ें / Add to Calendar
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>

@@ -9,7 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Switch } from '@/components/ui/switch';
 import { addAppointment } from '@/lib/appointmentUtils';
+import { isGoogleCalendarAuthorized, requestCalendarAuthorization } from '@/lib/googleCalendarUtils';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +28,8 @@ const AppointmentForm = ({ onSuccess }: AppointmentFormProps) => {
     location: '',
     notes: '',
   });
+  const [addToCalendar, setAddToCalendar] = useState(isGoogleCalendarAuthorized());
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -36,7 +40,19 @@ const AppointmentForm = ({ onSuccess }: AppointmentFormProps) => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleAddToCalendarChange = async (checked: boolean) => {
+    if (checked && !isGoogleCalendarAuthorized()) {
+      toast.info('कैलेंडर एक्सेस की आवश्यकता है / Calendar access required');
+      const authorized = await requestCalendarAuthorization();
+      if (!authorized) {
+        toast.error('कैलेंडर एक्सेस अस्वीकृत / Calendar access denied');
+        return;
+      }
+    }
+    setAddToCalendar(checked);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!date || !formData.time || !formData.title || !formData.purpose) {
@@ -44,29 +60,38 @@ const AppointmentForm = ({ onSuccess }: AppointmentFormProps) => {
       return;
     }
 
-    const newAppointment = {
-      title: formData.title,
-      purpose: formData.purpose,
-      date: format(date, 'yyyy-MM-dd'),
-      time: formData.time,
-      location: formData.location,
-      notes: formData.notes,
-    };
+    setIsSubmitting(true);
 
-    addAppointment(newAppointment);
-    toast.success('अपॉइंटमेंट सेव की गई! / Appointment saved!');
-    
-    // Reset form
-    setDate(undefined);
-    setFormData({
-      title: '',
-      purpose: '',
-      time: '',
-      location: '',
-      notes: '',
-    });
-    
-    onSuccess();
+    try {
+      const newAppointment = {
+        title: formData.title,
+        purpose: formData.purpose,
+        date: format(date, 'yyyy-MM-dd'),
+        time: formData.time,
+        location: formData.location,
+        notes: formData.notes,
+      };
+
+      await addAppointment(newAppointment);
+      toast.success('अपॉइंटमेंट सेव की गई! / Appointment saved!');
+      
+      // Reset form
+      setDate(undefined);
+      setFormData({
+        title: '',
+        purpose: '',
+        time: '',
+        location: '',
+        notes: '',
+      });
+      
+      onSuccess();
+    } catch (error) {
+      toast.error('एक त्रुटि हुई / An error occurred');
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const appointmentTypes = [
@@ -181,8 +206,23 @@ const AppointmentForm = ({ onSuccess }: AppointmentFormProps) => {
         />
       </div>
 
-      <Button type="submit" className="w-full kilkari-button-primary">
-        अपॉइंटमेंट बुक करें / Book Appointment
+      <div className="flex items-center space-x-2">
+        <Switch 
+          id="add-to-calendar" 
+          checked={addToCalendar}
+          onCheckedChange={handleAddToCalendarChange}
+        />
+        <Label htmlFor="add-to-calendar" className="cursor-pointer">
+          Google कैलेंडर में जोड़ें / Add to Google Calendar
+        </Label>
+      </div>
+
+      <Button 
+        type="submit" 
+        className="w-full kilkari-button-primary"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? 'सेव कर रहे हैं... / Saving...' : 'अपॉइंटमेंट बुक करें / Book Appointment'}
       </Button>
     </form>
   );
