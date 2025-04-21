@@ -13,9 +13,9 @@ const mockUsers: User[] = [
     location: '110001',
     language: 'hindi',
     moodHistory: [
-      { date: '2023-04-15', mood: 'happy', notes: 'Felt baby kick today!' },
-      { date: '2023-04-14', mood: 'tired', notes: 'Had trouble sleeping' },
-      { date: '2023-04-13', mood: 'neutral', notes: '' },
+      { date: '2023-04-15', mood: 'happy', note: 'Felt baby kick today!' },
+      { date: '2023-04-14', mood: 'neutral', note: 'Had trouble sleeping' },
+      { date: '2023-04-13', mood: 'neutral', note: '' },
     ]
   },
   {
@@ -28,9 +28,9 @@ const mockUsers: User[] = [
     location: '400001',
     language: 'english',
     moodHistory: [
-      { date: '2023-04-15', mood: 'happy', notes: 'Baby smiled at me!' },
-      { date: '2023-04-14', mood: 'neutral', notes: '' },
-      { date: '2023-04-13', mood: 'tired', notes: 'Baby was crying all night' },
+      { date: '2023-04-15', mood: 'happy', note: 'Baby smiled at me!' },
+      { date: '2023-04-14', mood: 'neutral', note: '' },
+      { date: '2023-04-13', mood: 'sad', note: 'Baby was crying all night' },
     ]
   }
 ];
@@ -39,6 +39,11 @@ const mockUsers: User[] = [
 export const getUser = (): User | null => {
   const userStr = localStorage.getItem('kilkari-user');
   return userStr ? JSON.parse(userStr) : null;
+};
+
+// Check if user is authenticated
+export const isAuthenticated = (): boolean => {
+  return getUser() !== null;
 };
 
 // Save user to local storage
